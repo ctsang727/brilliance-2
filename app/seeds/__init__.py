@@ -2,6 +2,7 @@ from flask.cli import AppGroup
 from .users import seed_users, undo_users 
 from .tracks import seed_tracks, undo_tracks
 from .comments import seed_comments, undo_comments
+from app.models.db import db, environment, SCHEMA
 # from .annotations import seed_annotations, undo_annotations
 
 # Creates a seed group to hold our commands
@@ -12,6 +13,9 @@ seed_commands = AppGroup('seed')
 # Creates the `flask seed all` command
 @seed_commands.command('all')
 def seed():
+    if environment == 'production':
+        db.session.execute(f"TRUNCATE table {SCHEMA}.users RESTART IDENTITY CASCADE;")
+        db.session.commit()
     seed_users()
     seed_tracks()
     seed_comments()

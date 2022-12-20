@@ -1,12 +1,25 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+
+import os
+environment = os.getenv("FLASK_ENV")
+SCHEMA = os.environ.get('SCHEMA')
+
 db = SQLAlchemy()
+
+def add_prefix_for_prod(attr):
+    if environment == "production":
+        return f"{SCHEMA}.{attr}"
+    else:
+        return attr
 
 class Track(db.Model):
   __tablename__ = "tracks"
+  if environment == "production":
+        __table_args__ = {'schema': SCHEMA}
   
   id = db.Column(db.Integer, primary_key=True, nullable=False)
-  user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+  user_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id')))
   title = db.Column(db.String(50), nullable=False)
   lyrics = db.Column(db.Text(), nullable=False)
   artist = db.Column(db.String(50), nullable=False)
@@ -38,10 +51,12 @@ class Track(db.Model):
   
 class Annotation(db.Model):
   __tablename__ = "annotations"
+  if environment == "production":
+        __table_args__ = {'schema': SCHEMA}
   
   id = db.Column(db.Integer, primary_key=True, nullable=False)
-  user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-  track_id = db.Column(db.Integer, db.ForeignKey("tracks.id"), nullable=False)
+  user_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id')))
+  track_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('tracks.id')))
   content = db.Column(db.Text, nullable=False)
   initialAnnoIndex = db.Column(db.Integer)
   finalAnnoIndex = db.Column(db.Integer)
@@ -70,11 +85,13 @@ class Annotation(db.Model):
   
 class Comment(db.Model):
   __tablename__ = "comments"
+  if environment == "production":
+        __table_args__ = {'schema': SCHEMA}
   
   id = db.Column(db.Integer, primary_key=True, nullable=False)
-  user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-  annotation_id = db.Column(db.Integer, db.ForeignKey("annotations.id"))
-  track_id = db.Column(db.Integer, db.ForeignKey("tracks.id"))
+  user_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id')))
+  annotation_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('annotations.id')))
+  track_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('tracks.id')))
   content = db.Column(db.Text, nullable=False)
   vote_score = db.Column(db.Integer)
   created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
@@ -97,12 +114,14 @@ class Comment(db.Model):
 
 class Vote(db.Model):
   __tablename__ = "votes"
+  if environment == "production":
+        __table_args__ = {'schema': SCHEMA}
   
   id = db.Column(db.Integer, primary_key=True, nullable=False)
   vote = db.Column(db.Boolean)
-  user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-  annotation_id = db.Column(db.Integer, db.ForeignKey("annotations.id"))
-  comment_id = db.Column(db.Integer, db.ForeignKey("comments.id"))
+  user_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('users.id')))
+  annotation_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('annotations.id')))
+  comment_id = db.Column(db.Integer, db.ForeignKey(add_prefix_for_prod('comments.id')))
   
   
   def to_dict(self):
