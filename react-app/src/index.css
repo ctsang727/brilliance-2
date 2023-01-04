@@ -8,7 +8,7 @@
 
 #footer{
     display: flex;
-    position: fixed;
+    position: static;
     height: 30px;
     background-color: black;
     bottom: 0;
