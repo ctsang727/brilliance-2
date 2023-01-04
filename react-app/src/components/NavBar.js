@@ -39,9 +39,9 @@ const NavBar = () => {
             <NavLink to='/' exact={true} activeClassName='active'>
               Home
             </NavLink>
-            <NavLink to='/users' exact={true} activeClassName='active'>
+            {/* <NavLink to='/users' exact={true} activeClassName='active'>
               Users
-            </NavLink>
+            </NavLink> */}
             <NavLink to='/about' exact={true} activeClassName='active'>
               About Us
             </NavLink>
